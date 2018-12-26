@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Planning Poker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+  <link rel="stylesheet" href="./card.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+
+<body>
+  <section class="section">
+    <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+      <div class="container">
+        <div class="navbar-brand">
+          <div class="navbar-item">
+            <img src="./icon.png" width="28">
+            <span class="subtitle">&nbsp;&nbsp;Planning Poker</span>
+          </div>
+          <span class="navbar-burger burger" data-target="nav-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
+        <div id="nav-menu" class="navbar-menu">
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-small">
+                  <span id="player-name"></span>
+                </a>
+                <a class="button is-info is-rounded is-small" onclick="editName()">
+                  <span class="icon">
+                    <i class="fas fa-edit"></i>
+                  </span>
+                  <span>Edit</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <hr />
+    <div class="tabs is-centered is-boxed is-fixed-top">
+      <ul>
+        <li id="info-tab" class="is-active">
+          <a onclick="showInfoTab()">
+            <span class="icon is-small"><i class="fas fa-info" aria-hidden="true"></i></span>
+            <span>Info</span>
+          </a>
+        </li>
+        <li id="host-tab">
+          <a onclick="showHostTab()">
+            <span class="icon is-small"><i class="fas fa-wifi" aria-hidden="true"></i></span>
+            <span>Host</span>
+          </a>
+        </li>
+        <li id="join-tab">
+          <a onclick="showJoinTab()">
+            <span class="icon is-small"><i class="fas fa-dice" aria-hidden="true"></i></span>
+            <span>Join</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="container">
+      <div id="info-game" class="container is-hidden">
+        <div class="container box">
+          Info tab
+        </div>
+      </div>
+      <div id="host-game" class="container is-hidden">
+        <div class="container box">
+          <div id="game-controls" class="buttons is-hidden">
+            <a id="start-new-game" class="button is-info is-rounded is-small">
+              <span class="icon">
+                <i class="fas fa-plus-square"></i>
+              </span>
+              <span>New Game</span>
+            </a>
+            <a id="reveal-votes" class="button is-info is-rounded is-small">
+              <span class="icon">
+                <i class="fas fa-eye"></i>
+              </span>
+              <span>Reveal Votes</span>
+            </a>
+            <a class="button is-small">
+              <strong><span class="is-small" id="host-ip"></span></strong>
+            </a>
+            <a class="button is-info is-rounded is-small" onclick="copyIp()">
+              <span class="icon">
+                <i class="fas fa-copy"></i>
+              </span>
+              <span>Copy IP</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <span><br /></span>
+      <div id="game-view" class="container box is-center is-hidden">
+        <div class="container">
+          <div class="is-right">
+          <a class="button is-small">
+            <strong>
+              <span id="game-name"></span>
+            </strong>
+          </a>
+          <a class="button is-rounded is-small" onclick="showEditGameModal()">
+            <span class="icon">
+              <i class="fas fa-edit"></i>
+            </span>
+            <span>Game Name</span>
+          </a>
+          </div>
+        </div>
+        <div id="game" class="container is-center">
+          <table>
+            <tr>
+              <td>
+                <div class="title">
+                  <br />
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div id="table" class="cardfield"></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="title">
+                  <br />
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div id="hand" class="cardfield"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div id="edit-name-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Player Name</label>
+          <div class="control">
+            <input id="new-player-name" class="input is-small is-rounded" width="15" type="text" />
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-info is-small is-rounded" onclick="saveName()">Set Name</button>
+        <button class="button is-small is-rounded" onclick="document.getElementById('edit-name-modal').classList.remove('is-active')">Cancel</button>
+      </footer>
+    </div>
+  </div>
+  <div id="edit-game-name-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Game Name</label>
+          <div class="control">
+            <input id="new-game-name" class="input is-small is-rounded" type="text" maxwidth="25" />
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-info is-small is-rounded" onclick="setGameName()">Set Game Name</button>
+        <button class="button is-small is-rounded" onclick="document.getElementById('edit-game-name-modal').classList.remove('is-active')">Cancel</button>
+      </footer>
+    </div>
+  </div>
+  <div id="join-game-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Game host IP</label>
+          <div class="control has-icons-left has-icons-right">
+            <input id="game-host-ip" class="input is-rounded is-small" placeholder="IP Address of Host">
+            <span class="icon is-small is-left">
+              <i class="fas fa-server"></i>
+            </span>
+          </div>
+          <p class="help is-danger is-hidden">No such host, or no game available on host.</p>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="button is-info is-small is-rounded" onclick="joinGame()">Set Name</button>
+        <button class="button is-small is-rounded" onclick="cancelJoinGame()">Cancel</button>
+      </footer>
+    </div>
+  </div>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+  <script type="text/javascript" src="poker.js"></script>
+  <script type="text/javascript" src="animalIcons.js"></script>
+  <script>
+    require('./renderer.js')
+
+    var Store = require('electron-store')
+    var store = new Store({ name: 'electron-store' })
+    var randomName = require('moniker')
+
+    var remote = require('electron').remote;
+    var ip = require("ip").address() + ":" + remote.getGlobal('context').port
+    var baseServerUrl = "http://" + ip + "/"
+    document.getElementById("host-ip").textContent = ip
+
+    function getGameHost() { return remote.getGlobal('context').host }
+    function getGameId() { return remote.getGlobal('context').id }
+    function getPlayerName() { return remote.getGlobal('context').name }
+    var client;
+
+    // If name already set, show info tab else set name
+    if (!remote.getGlobal('context').name) {
+      editName()
+    } else {
+      document.getElementById("player-name").innerText = remote.getGlobal('context').name
+      showInfoTab()
+    }
+
+    function getRandomName() {
+      return randomName.choose()
+    }
+
+    function hideAllTabContent() {
+      document.getElementById("info-game").classList.add("is-hidden")
+      document.getElementById("host-game").classList.add("is-hidden")
+      document.getElementById("game-controls").classList.add('is-hidden')
+      document.getElementById("game-view").classList.add('is-hidden')
+    }
+
+    function allTabsInactive() {
+      document.getElementById("info-tab").classList.remove('is-active')
+      document.getElementById("host-tab").classList.remove('is-active')
+      document.getElementById("join-tab").classList.remove('is-active')
+    }
+
+    function showInfoTab() {
+      allTabsInactive()
+      hideAllTabContent()
+      document.getElementById("info-tab").classList.add('is-active')
+      document.getElementById("info-game").classList.remove("is-hidden")
+    }
+
+    function showHostTab() {
+      allTabsInactive()
+      hideAllTabContent()
+      document.getElementById("host-tab").classList.add('is-active')
+      document.getElementById("host-game").classList.remove("is-hidden")
+      hostGame()
+    }
+
+    function showJoinTab() {
+      allTabsInactive()
+      hideAllTabContent()
+      document.getElementById("join-tab").classList.add('is-active')
+
+      if (!document.getElementById("player-name").innerText) {
+        editName()
+      } else {
+        showJoinModal()
+      }
+    }
+
+    function editName() {
+      document.getElementById("new-player-name").value = document.getElementById("player-name").innerText
+      document.getElementById("edit-name-modal").classList.add('is-active')
+    }
+
+    function saveName() {
+      document.getElementById("player-name").textContent = document.getElementById("new-player-name").value
+      var playerName = document.getElementById("player-name").innerText
+      remote.getGlobal('context').name = playerName
+      store.set("name", playerName)
+
+      document.getElementById("edit-name-modal").classList.remove('is-active')
+      document.getElementById("new-player-name").value = ""
+      showInfoTab()
+    }
+
+    function setGameName() {
+      document.getElementById("game-name").textContent = document.getElementById("new-game-name").value
+      client.nameChange()
+      document.getElementById("edit-game-name-modal").classList.remove('is-active')
+    }
+
+    function setRandomGameName() {
+      var gameName = getRandomName()
+      document.getElementById("game-name").textContent = gameName
+    }
+
+    function hostGame() {
+      var name = getPlayerName()
+      var host = generateUUID()
+      remote.getGlobal('context').host = host
+      remote.getGlobal('context').id = host
+
+      client = new PokerClient(getGameId(), getPlayerName(), getGameHost(), baseServerUrl)
+      client.nameChange()
+      document.getElementById("host-ip").textContent = baseServerUrl + "|" + host
+      startPoker()
+      startNewGame()
+
+      showGameControls()
+      showGameView()
+    }
+
+    function startNewGame() {
+      client.newGame()
+      setRandomGameName()
+      client.nameChange()
+    }
+
+    function startPoker() {
+      document.getElementById("game-view").classList.remove('is-hidden')
+      client.joinGame()
+      document.getElementById("reveal-votes").addEventListener("click", function () {
+        client.callGame()
+      });
+      document.getElementById("start-new-game").addEventListener("click", function () {
+        startNewGame()
+      });
+    }
+
+    function showEditGameModal() {
+      document.getElementById("edit-game-name-modal").classList.add('is-active')
+      document.getElementById("new-game-name").value = document.getElementById("game-name").innerText
+    }
+
+    function showGameControls() {
+      document.getElementById("game-controls").classList.remove('is-hidden')
+    }
+
+    function showGameView() {
+      document.getElementById("game-view").classList.remove('is-hidden')
+    }
+
+    function hideGameControls() {
+      document.getElementById("game-controls").classList.add('is-hidden')
+    }
+
+    function showJoinModal() {
+      document.getElementById("join-game-modal").classList.add('is-active')
+      document.getElementById("game-host-ip").value = ""
+    }
+
+    function cancelJoinGame() {
+      document.getElementById("join-game-modal").classList.remove('is-active')
+      showInfoTab()
+    }
+
+    function joinGame() {
+      var gameHost = document.getElementById("game-host-ip").value.split("|")
+      document.getElementById("join-game-modal").classList.remove('is-active')
+      var playerId = generateUUID()
+      remote.getGlobal('context').host = gameHost[1]
+      remote.getGlobal('context').id = playerId
+      showGameView()
+      client = new PokerClient(getGameId(), getPlayerName(), getGameHost(), gameHost[0])
+      startPoker()
+    }
+
+    function copyIp() {
+      const { clipboard } = require('electron')
+      clipboard.writeText(document.getElementById("host-ip").innerText)
+      let myNotification = new Notification('Planning Poker', {
+        body: 'Host IP Copied to Clipboard!'
+      });
+    }
+
+    function generateUUID() { // Public Domain/MIT
+      var d = new Date().getTime();
+      if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+        d += performance.now(); //use high-precision timer if available
+      }
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
+    // Keypress listeners
+    function dismissModal(element) {
+      element.classList.remove('is-active')
+    }
+
+    var editNameModal = document.getElementById("edit-name-modal")
+    var joinGameModal = document.getElementById("join-game-modal")
+    var editGameNameModal = document.getElementById("edit-game-name-modal")
+    editNameModal.addEventListener("keyup", function (event) {
+      event.preventDefault()
+      if (event.keyCode === 13) {
+        saveName()
+      } else if (event.keyCode == 27) {
+        dismissModal(this)
+      }
+    })
+    editGameNameModal.addEventListener("keyup", function (event) {
+      event.preventDefault()
+      if (event.keyCode === 13) {
+        setGameName()
+      } else if (event.keyCode == 27) {
+        dismissModal(this)
+      }
+    })
+    joinGameModal.addEventListener("keyup", function (event) {
+      event.preventDefault()
+      if (event.keyCode === 13) {
+        joinGame()
+      } else if (event.keyCode == 27) {
+        dismissModal(this)
+      }
+    })
+
+    // Global escape handler for dismissing modals.
+    document.addEventListener("keyup", function (event) {
+      event.preventDefault()
+      if (event.keyCode == 27) {
+        dismissModal(editNameModal)
+        cancelJoinGame()
+      }
+    })
+  </script>
+  <script>
+      // Navbar to burger script
+      (function () {
+        var burger = document.querySelector('.burger');
+        var nav = document.querySelector('#' + burger.dataset.target);
+        burger.addEventListener('click', function () {
+          burger.classList.toggle('is-active');
+          nav.classList.toggle('is-active');
+        });
+      })();
+  </script>
+</body>
+
+</html>
