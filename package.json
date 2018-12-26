@@ -1,21 +1,22 @@
 {
-  "name": "electron-quick-start",
+  "name": "planning-poker",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "Planning poker electron app using socket.io",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/subash-canapathy/planning-poker",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "sprint",
+    "scrum",
+    "planning",
+    "poker",
+    "socketio"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Subash Canapathy",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^3.0.7",
     "electron-reloader": "^0.2.0"
